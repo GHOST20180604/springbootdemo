@@ -11,7 +11,7 @@ public class ExcelExportEntity {
     /**
      * 文件路径
      */
-    @Excel(name = "路径", width = 23)
+    @Excel(name = "路径", width = 35)
     private String url;
     /**
      * 文件名
@@ -22,6 +22,11 @@ public class ExcelExportEntity {
      */
     @Excel(name = "风险词", width = 23)
     private String errorItem;
+    /**
+     * 压缩文件/非压缩文件
+     */
+    @Excel(name = "文件类型", width = 14)
+    private String fileType;
 
 
 }

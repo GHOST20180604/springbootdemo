@@ -52,7 +52,7 @@ public class SensitiveCheckSuoBan {
      *
      * @param path
      */
-    public static void readDirectory(String path, final List<ExcelExportEntity> list, List<String> rarList, List<String> zipList) {
+    public void readDirectory(String path, final List<ExcelExportEntity> list, List<String> rarList, List<String> zipList, String fileType) {
         String word = "绝密、机密、秘密、此件不公开、★";
         final String[] split = word.split("、");
 
@@ -65,6 +65,7 @@ public class SensitiveCheckSuoBan {
 //                    System.out.println("File: " + file.toString());
                     InputStream inputStream = null;
                     ExcelExportEntity excelExportEntity = new ExcelExportEntity();
+                    excelExportEntity.setFileType(fileType);
                     List<String> errorList = new ArrayList<>();
                     String path = file.toString();
                     try {
@@ -155,70 +156,70 @@ public class SensitiveCheckSuoBan {
     }
 
 
-    public static void main(String[] args) throws Exception {
-        TimeInterval timer = DateUtil.timer();
-        String path = "D:\\del\\test\\";
-        String outPath = "D:\\del\\error.xlsx";
-        String zipTempPath = "D:\\del\\checkSuoban\\";
-        List<ExcelExportEntity> list = new ArrayList<>();
-        List<String> zipList = new ArrayList<>();
-        List<String> rarList = new ArrayList<>();
-        FileUtil.createFile(new File(zipTempPath));
-        FileUtil.createFile(new File(outPath));
-        readDirectory(path, list, rarList, zipList);
-        log.info("第一遍扫描文件: useTime: {}", timer.intervalRestart());
-//        System.out.println(list);
-        if (!zipList.isEmpty()) {
-            log.info("含有zip文件");
-            for (String zipPath : zipList) {
-                String onePath_ = zipPath.replace(File.separator, "_").replace(".", "_").replaceAll(":", "_");
-                if (onePath_.length() > 100) {
-                    onePath_ = onePath_.substring(onePath_.length() - 100);
-                }
-                String zipTempPathOne = zipTempPath + onePath_ + "\\";
-                FileUtil.createFile(new File(zipTempPathOne));
-                try {
-                    ZipUtils.unzip(zipPath, zipTempPathOne, "GBK");
-                } catch (Exception e) {
-                    log.info("解压文件失败,尝试使用UTF-8解压");
-                    try {
-                        ZipUtils.unzip(zipPath, zipTempPathOne, "UTF-8");
-                    } catch (Exception e1) {
-                        log.info("GBK 和 UTF-8 都解压文件失败");
-                        ExcelExportEntity excelExportEntity = new ExcelExportEntity();
-                        excelExportEntity.setUrl(zipPath);
-                        excelExportEntity.setErrorItem("解压文件失败:" + e.getMessage());
-                        list.add(excelExportEntity);
-                    }
-                }
-            }
-        }
-        log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
-        rarList = new ArrayList<>();
-        zipList = new ArrayList<>();
-        readDirectory(zipTempPath, list, rarList, zipList);
-        log.info("第二遍扫描文件: useTime: {}", timer.intervalRestart());
-        FileUtil.deleteFileOrDirectory(new File(zipTempPath));
-
-        //设置导出参数
-        ExportParams params = new ExportParams();
-        //设置excel类型，XSSF代表xlsx，HSSF代表xls
-        params.setType(ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(params, ExcelExportEntity.class, list);
-        OutputStream os = null;
-        //将文件存入response对象中，返回给前端
-        try {
-            os = new FileOutputStream(outPath);
-        } catch (Exception e) {
-            log.error("导出excel失败，msg: {}", e.getMessage(), e);
-        } finally {
-            workbook.write(os);
-            IoUtil.close(workbook);
-            os.flush();
-            IoUtil.close(os);
-
-        }
-
-    }
+//    public static void main(String[] args) throws Exception {
+//        TimeInterval timer = DateUtil.timer();
+//        String path = "D:\\code\\";
+//        String outPath = "D:\\del\\error.xlsx";
+//        String zipTempPath = "D:\\del\\checkSuoban\\";
+//        List<ExcelExportEntity> list = new ArrayList<>();
+//        List<String> zipList = new ArrayList<>();
+//        List<String> rarList = new ArrayList<>();
+//        FileUtil.createFile(new File(zipTempPath));
+//        FileUtil.createFile(new File(outPath));
+//        readDirectory(path, list, rarList, zipList);
+//        log.info("第一遍扫描文件: useTime: {}", timer.intervalRestart());
+////        System.out.println(list);
+//        if (!zipList.isEmpty()) {
+//            log.info("含有zip文件");
+//            for (String zipPath : zipList) {
+//                String onePath_ = zipPath.replace(File.separator, "_").replace(".", "_").replaceAll(":", "_");
+//                if (onePath_.length() > 100) {
+//                    onePath_ = onePath_.substring(onePath_.length() - 100);
+//                }
+//                String zipTempPathOne = zipTempPath + onePath_ + "\\";
+//                FileUtil.createFile(new File(zipTempPathOne));
+//                try {
+//                    ZipUtils.unzip(zipPath, zipTempPathOne, "GBK");
+//                } catch (Exception e) {
+//                    log.info("解压文件失败,尝试使用UTF-8解压");
+//                    try {
+//                        ZipUtils.unzip(zipPath, zipTempPathOne, "UTF-8");
+//                    } catch (Exception e1) {
+//                        log.info("GBK 和 UTF-8 都解压文件失败");
+//                        ExcelExportEntity excelExportEntity = new ExcelExportEntity();
+//                        excelExportEntity.setUrl(zipPath);
+//                        excelExportEntity.setErrorItem("解压文件失败:" + e.getMessage());
+//                        list.add(excelExportEntity);
+//                    }
+//                }
+//            }
+//        }
+//        log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
+//        rarList = new ArrayList<>();
+//        zipList = new ArrayList<>();
+//        readDirectory(zipTempPath, list, rarList, zipList);
+//        log.info("第二遍扫描文件: useTime: {}", timer.intervalRestart());
+//        FileUtil.deleteFileOrDirectory(new File(zipTempPath));
+//
+//        //设置导出参数
+//        ExportParams params = new ExportParams();
+//        //设置excel类型，XSSF代表xlsx，HSSF代表xls
+//        params.setType(ExcelType.XSSF);
+//        Workbook workbook = ExcelExportUtil.exportExcel(params, ExcelExportEntity.class, list);
+//        OutputStream os = null;
+//        //将文件存入response对象中，返回给前端
+//        try {
+//            os = new FileOutputStream(outPath);
+//        } catch (Exception e) {
+//            log.error("导出excel失败，msg: {}", e.getMessage(), e);
+//        } finally {
+//            workbook.write(os);
+//            IoUtil.close(workbook);
+//            os.flush();
+//            IoUtil.close(os);
+//
+//        }
+//
+//    }
 
 }
