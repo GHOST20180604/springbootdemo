@@ -1,10 +1,11 @@
 package com.hanyc.demo.util;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * @author ：zjx
- * @description：
+ * @author ：hanyc
+ * @description： AC自动机 扫描长文本中是否存在 list集合中的风险词
  * @date ：2024/9/24 14:07
  */
 public class AhoCorasickAutomation {
@@ -103,23 +104,36 @@ public class AhoCorasickAutomation {
         return result;
     }
 
+    /**
+     * AC 自动机 返回List 风险词
+     *
+     * @param text
+     * @return
+     */
+    public List<String> find2ListKey(String text) {
+        Map<String, List<Integer>> stringListMap = find(text);
+        return stringListMap.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Map.Entry::getKey).collect(Collectors.toList());
+    }
+
     public static void main(String[] args) {
         List<String> target = new ArrayList<>();
-        target.add("你好");
-        target.add("好人");
-        target.add("是");
-        target.add("我");
-        target.add("个好");
+//        target.add("你好");
+//        target.add("好人");
+//        target.add("是");
+//        target.add("我");
+//        target.add("个好");
         target.add("你好人");
 
-        String text = "你是一个好人";
+        String text = "你好是一个好人你好";
 
         AhoCorasickAutomation aca = new AhoCorasickAutomation(target);
         Map<String, List<Integer>> stringListMap = aca.find(text);
-
-        System.out.println(text);
-        for (Map.Entry<String, List<Integer>> entry : stringListMap.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
-        }
+        List<String> collect = stringListMap.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Map.Entry::getKey).collect(Collectors.toList());
+//        stringListMap = stringListMap.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//        Set<String> strings = stringListMap.keySet();
+        System.out.println(collect);
+//        for (Map.Entry<String, List<Integer>> entry : stringListMap.entrySet()) {
+//            System.out.println(entry.getKey() + " : " + entry.getValue());
+//        }
     }
 }

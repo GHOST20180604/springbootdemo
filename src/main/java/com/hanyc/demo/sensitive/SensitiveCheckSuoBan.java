@@ -15,6 +15,7 @@ import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.hanyc.demo.constants.FileConstant;
 import com.hanyc.demo.entity.ExcelExportEntity;
+import com.hanyc.demo.util.AhoCorasickAutomation;
 import com.hanyc.demo.util.DocReadUtil;
 import com.hanyc.demo.util.FileUtil;
 import com.hanyc.demo.util.ZipUtils;
@@ -32,6 +33,7 @@ import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +55,8 @@ public class SensitiveCheckSuoBan {
     public static void readDirectory(String path, final List<ExcelExportEntity> list, List<String> rarList, List<String> zipList) {
         String word = "绝密、机密、秘密、此件不公开、★";
         final String[] split = word.split("、");
-        TimeInterval timer = DateUtil.timer();
+
+        AhoCorasickAutomation aca = new AhoCorasickAutomation(Arrays.asList(split));
         try {
             Files.walkFileTree(Paths.get(path), new SimpleFileVisitor<Path>() {
                 @Override
@@ -77,102 +80,54 @@ public class SensitiveCheckSuoBan {
                         // 解析文件内容，
                         if (FileConstant.SUFFIX_PPT.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentPpt(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_CSV.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentCsv(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_XLSX.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentXlsx(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_XLS.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentXls(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_WPS.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentWps(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_HTML.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentHtml(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_PPTX.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentPpts(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_TXT.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentTxt(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_DOC.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentDoc(inputStream);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_DOCX.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentDocx(inputStream);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_PDF.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentDocxPdf(inputStream);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_DOT.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentDot(path);
-                            for (String str : split) {
-                                if (contentDoc.contains(str)) {
-                                    errorList.add(str);
-                                }
-                            }
+                            errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         excelExportEntity.setUrl(path);
-                        excelExportEntity.setErrorItem(errorList.toString());
+                        excelExportEntity.setErrorItem(String.join(",", errorList));
                         list.add(excelExportEntity);
                     } catch (Exception e) {
                         excelExportEntity.setUrl(path);
@@ -201,7 +156,7 @@ public class SensitiveCheckSuoBan {
 
 
     public static void main(String[] args) throws Exception {
-
+        TimeInterval timer = DateUtil.timer();
         String path = "D:\\del\\test\\";
         String outPath = "D:\\del\\error.xlsx";
         String zipTempPath = "D:\\del\\checkSuoban\\";
@@ -211,6 +166,7 @@ public class SensitiveCheckSuoBan {
         FileUtil.createFile(new File(zipTempPath));
         FileUtil.createFile(new File(outPath));
         readDirectory(path, list, rarList, zipList);
+        log.info("第一遍扫描文件: useTime: {}", timer.intervalRestart());
 //        System.out.println(list);
         if (!zipList.isEmpty()) {
             log.info("含有zip文件");
@@ -234,13 +190,14 @@ public class SensitiveCheckSuoBan {
                         excelExportEntity.setErrorItem("解压文件失败:" + e.getMessage());
                         list.add(excelExportEntity);
                     }
-
                 }
             }
         }
+        log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
         rarList = new ArrayList<>();
         zipList = new ArrayList<>();
         readDirectory(zipTempPath, list, rarList, zipList);
+        log.info("第二遍扫描文件: useTime: {}", timer.intervalRestart());
         FileUtil.deleteFileOrDirectory(new File(zipTempPath));
 
         //设置导出参数
