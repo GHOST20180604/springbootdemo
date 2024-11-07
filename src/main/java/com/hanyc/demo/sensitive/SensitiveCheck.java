@@ -26,6 +26,9 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 扫描excel中的文件路径文件.
+ */
 @Slf4j
 public class SensitiveCheck {
     public static void main(String[] args) throws IOException {
