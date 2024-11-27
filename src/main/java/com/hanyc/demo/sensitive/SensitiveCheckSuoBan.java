@@ -32,10 +32,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -54,7 +51,8 @@ public class SensitiveCheckSuoBan {
      * @param path
      */
     public void readDirectory(String path, final List<ExcelExportEntity> list, List<String> rarList, List<String> zipList, String fileType) {
-        String word = "绝密、机密、秘密、此件不公开、★";
+//        String word = "此件不公开、绝密★、机密★、秘密★";
+        String word = "绝密、机密、秘密、此件不公开、★、绝密★、机密★、秘密★";
         final String[] split = word.split("、");
 
         AhoCorasickAutomation aca = new AhoCorasickAutomation(Arrays.asList(split));
@@ -89,12 +87,12 @@ public class SensitiveCheckSuoBan {
                             errorList.addAll(aca.find2ListKey(contentDoc));
                         }
                         if (FileConstant.SUFFIX_XLSX.equals(suffix)) {
-                            String contentDoc = DocReadUtil.getContentXlsx(path);
-                            errorList.addAll(aca.find2ListKey(contentDoc));
+                            Set<String> xlsxListError = DocReadUtil.getContentXlsx(path, aca);
+                            errorList.addAll(xlsxListError);
                         }
                         if (FileConstant.SUFFIX_XLS.equals(suffix)) {
-                            String contentDoc = DocReadUtil.getContentXls(path);
-                            errorList.addAll(aca.find2ListKey(contentDoc));
+                            Set<String> xlsxListError = DocReadUtil.getContentXls(path,aca);
+                            errorList.addAll(xlsxListError);
                         }
                         if (FileConstant.SUFFIX_WPS.equals(suffix)) {
                             String contentDoc = DocReadUtil.getContentWps(path);
@@ -159,9 +157,10 @@ public class SensitiveCheckSuoBan {
 
     public static void main(String[] args) throws Exception {
         TimeInterval timer = DateUtil.timer();
-        String path = "D:\\code\\";
-        String outPath = "D:\\del\\error.xlsx";
-        String zipTempPath = "D:\\del\\checkSuoban\\";
+        String path = "C:\\Users\\hanyu\\Downloads\\template\\";
+//        String path = "C:\\Users\\hanyu\\Downloads\\2024 (2)\\2024\\";
+        String outPath = "D:\\del\\error-xtpt-20241112.xlsx";
+        String zipTempPath = "D:\\del\\checkKg\\";
         List<ExcelExportEntity> list = new ArrayList<>();
         List<String> zipList = new ArrayList<>();
         List<String> rarList = new ArrayList<>();
@@ -195,11 +194,11 @@ public class SensitiveCheckSuoBan {
                     }
                 }
             }
+            log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
+            rarList = new ArrayList<>();
+            zipList = new ArrayList<>();
+            sensitiveCheckSuoBan.readDirectory(zipTempPath, list, rarList, zipList, "加密文件");
         }
-        log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
-        rarList = new ArrayList<>();
-        zipList = new ArrayList<>();
-        sensitiveCheckSuoBan.readDirectory(zipTempPath, list, rarList, zipList, "加密文件");
         log.info("第二遍扫描文件: useTime: {}", timer.intervalRestart());
         FileUtil.deleteFileOrDirectory(new File(zipTempPath));
 

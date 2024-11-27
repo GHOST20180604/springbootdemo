@@ -417,12 +417,13 @@ public class DocReadUtil {
      * @param path
      * @return
      */
-    public static String getContentXlsx(String path) throws IOException {
+    public static Set<String> getContentXlsx(String path, AhoCorasickAutomation aca) throws IOException {
         StringBuffer content = new StringBuffer("");
         // 0表示获取正常，1表示获取异常
         InputStream is = null;
         Workbook workbookRead = null;
-        List<Object> mapList = new LinkedList<>();
+//        List<Object> mapList = new LinkedList<>();
+        Set<String> setError = new HashSet<>();
         try {
             is = new FileInputStream(path);
             workbookRead = StreamingReader.builder()
@@ -434,15 +435,19 @@ public class DocReadUtil {
                     .open(is);
             Sheet sheet = workbookRead.getSheetAt(0);
             //遍历所有的行进行文件的读取
-            logger.info("开始读取数据 start: ");
+            logger.info("开始读取数据xlsx  start: ");
+
             for (Row row : sheet) {
                 int i = 0;
                 Map<Integer, Object> oneMap = new HashMap<>();
                 for (; i < 18; i++) {
-                    oneMap.put(i, row.getCell(i) == null ? "" : row.getCell(i).getStringCellValue());
-                    content.append(row.getCell(i) == null ? "" : row.getCell(i).getStringCellValue());
+//                    oneMap.put(i, row.getCell(i) == null ? "" : row.getCell(i).getStringCellValue());
+//                    content.append(row.getCell(i) == null ? "" : row.getCell(i).getStringCellValue());
+                    if (!Objects.isNull(row.getCell(i))) {
+                        setError.addAll(aca.find2ListKey(row.getCell(i).getStringCellValue()));
+                    }
                 }
-                mapList.add(oneMap);
+//                mapList.add(oneMap);
             }
         } catch (Exception e) {
             logger.warn("读取excel数据失败:{}", e.getMessage());
@@ -451,7 +456,7 @@ public class DocReadUtil {
             IoUtil.close(is);
             IoUtil.close(workbookRead);
         }
-        return content.toString();
+        return setError;
     }
 
     /**
@@ -460,12 +465,13 @@ public class DocReadUtil {
      * @param path
      * @return
      */
-    public static String getContentXls(String path) throws IOException {
+    public static Set<String> getContentXls(String path, AhoCorasickAutomation aca) throws IOException {
         StringBuffer content = new StringBuffer("");
         // 0表示获取正常，1表示获取异常
         InputStream is = null;
         Workbook workbookRead = null;
-        List<Object> mapList = new LinkedList<>();
+//        List<Object> mapList = new LinkedList<>();
+        Set<String> setError = new HashSet<>();
         try {
             ArrayDataListener arrayDataListener = new ArrayDataListener();
             ZipSecureFile.setMinInflateRatio(0);
@@ -475,7 +481,8 @@ public class DocReadUtil {
             List<Map<String, String>> datas = data.getDatas();
             for (Map<String, String> map : datas) {
                 for (String str : map.values()) {
-                    content.append(str);
+//                    content.append(str);
+                    setError.addAll(aca.find2ListKey(str));
                 }
             }
         } catch (Exception e) {
@@ -485,7 +492,7 @@ public class DocReadUtil {
             IoUtil.close(is);
             IoUtil.close(workbookRead);
         }
-        return content.toString();
+        return setError;
     }
 
 
@@ -508,7 +515,7 @@ public class DocReadUtil {
             document = new HWPFDocument(fis);
             extractor = new WordExtractor(document);
             // 提取 .dot 文件中的文本内容
-            content.append( extractor.getText());
+            content.append(extractor.getText());
         } catch (Exception e) {
             throw e;
         } finally {

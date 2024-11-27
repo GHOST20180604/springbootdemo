@@ -111,11 +111,15 @@ public class AhoCorasickAutomation {
      * @return
      */
     public List<String> find2ListKey(String text) {
+        // TODO: 2024/11/8 text 中的所有空格全部去掉.
+        text = text.replaceAll(" ", "");
         Map<String, List<Integer>> stringListMap = find(text);
         return stringListMap.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
+
+
         List<String> target = new ArrayList<>();
 //        target.add("你好");
 //        target.add("好人");
@@ -124,8 +128,8 @@ public class AhoCorasickAutomation {
 //        target.add("个好");
         target.add("你好人");
 
-        String text = "你好是一个好人你好";
-
+        String text = "你好是一个  好人 你好 ";
+        System.out.println(text.replaceAll(" ", ""));
         AhoCorasickAutomation aca = new AhoCorasickAutomation(target);
         Map<String, List<Integer>> stringListMap = aca.find(text);
         List<String> collect = stringListMap.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Map.Entry::getKey).collect(Collectors.toList());
@@ -136,4 +140,5 @@ public class AhoCorasickAutomation {
 //            System.out.println(entry.getKey() + " : " + entry.getValue());
 //        }
     }
+
 }
