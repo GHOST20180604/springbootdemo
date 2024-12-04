@@ -51,8 +51,8 @@ public class SensitiveCheckSuoBan {
      * @param path
      */
     public void readDirectory(String path, final List<ExcelExportEntity> list, List<String> rarList, List<String> zipList, String fileType) {
-//        String word = "此件不公开、绝密★、机密★、秘密★";
-        String word = "绝密、机密、秘密、此件不公开、★、绝密★、机密★、秘密★";
+        String word = "此件不公开、绝密★、机密★、秘密★";
+//        String word = "绝密、机密、秘密、此件不公开、★、绝密★、机密★、秘密★";
         final String[] split = word.split("、");
 
         AhoCorasickAutomation aca = new AhoCorasickAutomation(Arrays.asList(split));

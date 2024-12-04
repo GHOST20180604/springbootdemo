@@ -15,10 +15,10 @@ import com.wf.captcha.ArithmeticCaptcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
@@ -69,6 +69,24 @@ public class DemoController {
         return true;
     }
 
+    /**
+     * 扫描所办所有文件数据
+     * 请求地址:http://127.0.0.1:9001/sensitiveCheckFile?urlList=D%3A%5Cdel%5Caaa%5C&outPath=D%3A%5Cdel%5Cerror-20241204.xlsx&zipTempPath=D%3A%5Cdel%5Cziptemp%5Ca.txt
+     * url 需要转义
+     * :改为 %3A
+     * /改为 %5C
+     * @return
+     */
+    @GetMapping("/sensitiveCheckFile")
+    public Boolean sensitiveCheckFile(@RequestParam("urlList") String urlList,
+                                      @RequestParam("outPath") String outPath,
+                                      @RequestParam("zipTempPath") String zipTempPath) {
+        for (String url : urlList.split(",")) {
+            checkSuoban(url, outPath, zipTempPath);
+        }
+        return true;
+    }
+
     public void checkSuoban(String url, String outPathExcel, String zipTempPathO) {
         TimeInterval timer = DateUtil.timer();
         String path = url;
@@ -86,7 +104,7 @@ public class DemoController {
         FileUtil.createFile(new File(zipTempPath));
         FileUtil.createFile(new File(outPath));
         SensitiveCheckSuoBan sensitiveCheckSuoBan = new SensitiveCheckSuoBan();
-        sensitiveCheckSuoBan.readDirectory(path, list, rarList, zipList,"非压缩文件");
+        sensitiveCheckSuoBan.readDirectory(path, list, rarList, zipList, "非压缩文件");
         log.info("第一遍扫描文件: useTime: {}", timer.intervalRestart());
 //        System.out.println(list);
         if (!zipList.isEmpty()) {
@@ -113,14 +131,11 @@ public class DemoController {
                     }
                 }
             }
+            log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
+            sensitiveCheckSuoBan.readDirectory(zipTempPath, list, rarList, zipList, "压缩文件");
+            log.info("第二遍扫描文件: useTime: {}", timer.intervalRestart());
+            FileUtil.deleteFileOrDirectory(new File(zipTempPath));
         }
-        log.info("解压文件耗时: useTime: {}", timer.intervalRestart());
-        rarList = new ArrayList<>();
-        zipList = new ArrayList<>();
-        sensitiveCheckSuoBan.readDirectory(zipTempPath, list, rarList, zipList,"压缩文件");
-        log.info("第二遍扫描文件: useTime: {}", timer.intervalRestart());
-        FileUtil.deleteFileOrDirectory(new File(zipTempPath));
-
         //设置导出参数
         ExportParams params = new ExportParams();
         //设置excel类型，XSSF代表xlsx，HSSF代表xls
@@ -137,6 +152,7 @@ public class DemoController {
         } finally {
             IoUtil.close(workbook);
             IoUtil.close(os);
+            log.info("整体扫描完成: useTime: {}", timer.intervalRestart());
         }
     }
 }
