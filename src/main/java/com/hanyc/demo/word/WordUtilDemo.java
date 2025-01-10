@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 
 /**
  * @author ：hanyc
- * @description：word工具类
+ * @description：word工具类 使用 aspose.words 给word 审核模式修改内容.
+ *
  * @date ：2023/2/13 15:25
  */
 @Slf4j
