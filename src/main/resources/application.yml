@@ -11,3 +11,12 @@ spring:
 #    multipart:
 #      max-file-size: 100MB
 #      max-request-size: 100MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  #  redis配置
+  redis:
+    database: 1
+    host: 172.16.8.72
+    port: 30079
+    password: 123456
