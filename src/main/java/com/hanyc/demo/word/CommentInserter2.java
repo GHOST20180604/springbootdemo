@@ -5,7 +5,7 @@ import com.aspose.words.*;
 import java.util.Date;
 
 /**
- * 使用  aspose.words 添加批注 和 修订模式.
+ * 使用  aspose.words 添加批注 .
  */
 public class CommentInserter2 {
 
@@ -14,7 +14,10 @@ public class CommentInserter2 {
         String targetPath = "D:\\del\\nraq2\\内容安全审核-样例 - " + System.currentTimeMillis() + ".docx";
         // 创建一个新的文档
         Document doc = new Document(filePath);
-
+        // 获取文档中所有的批注节点
+        NodeCollection<Comment> comments = doc.getChildNodes(NodeType.COMMENT, true);
+        // 删除所有批注
+        comments.clear();
         // 在第4到第5个字符间添加批注
         Paragraph para = doc.getFirstSection().getBody().getFirstParagraph();
         Comment cmt = addComment(doc, para);
@@ -23,11 +26,9 @@ public class CommentInserter2 {
         Comment cmt2 = addComment2(doc, para);
         para.appendChild(cmt2);
 
-        Paragraph para2 = doc.getFirstSection().getBody().getParagraphs().get(1);
-        Comment cmt3 = addComment2(doc, para2);
-
-
-        para2.appendChild(cmt3);
+//        Paragraph para2 = doc.getFirstSection().getBody().getParagraphs().get(1);
+//        Comment cmt3 = addComment2(doc, para2);
+//        para2.appendChild(cmt3);
         // 保存文档
         doc.save(targetPath);
 

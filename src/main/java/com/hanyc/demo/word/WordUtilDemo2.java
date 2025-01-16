@@ -26,19 +26,34 @@ public class WordUtilDemo2 {
         comments.clear();
 //        doc.AcceptAllRevisions();
         RevisionCollection revisions = doc.getRevisions();
+        for (int i = 0; i < revisions.getCount(); i++) {
+            Revision revision = revisions.get(i);
+            String author = revision.getAuthor();
+            System.out.println(author);
+            int revisionType = revision.getRevisionType();
+            System.out.println(revisionType);
+            Node parentNode = revision.getParentNode();
+            String text = parentNode.getText();
+            System.out.println(text);
+//            Paragraph paragraph = parentNode.GetAncestor(NodeType.Paragraph) as Paragraph;
+            Paragraph paragraph = (Paragraph) parentNode.getAncestor(NodeType.PARAGRAPH);
+            System.out.println(author);
+            if (paragraph != null) {
+                String text2 = paragraph.toString(SaveFormat.TEXT);
+                System.out.println(text2);
+            }
+
+        }
         // 拒绝所有修订
 //        revisions.rejectAll();
         // 接受所有修订
-        revisions.acceptAll();
+//        revisions.acceptAll();
         StringBuilder sb = new StringBuilder();
         for (int s = 0; s < sections.getCount(); s++) {
             //获取第一节
             Section sec = sections.get(s);
-            //删除页眉
+            //删除页眉页脚
             sec.getHeadersFooters().clear();
-//            sec.getHeadersFooters().getHeader().getChildObjects().clear();
-//            //删除页脚
-//            sec.getHeadersFooters().getFooter().getChildObjects().clear();
             Body body = sec.getBody();
             ParagraphCollection paragraphs = body.getParagraphs();
             for (int i = 0; i < paragraphs.getCount(); i++) {

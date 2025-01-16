@@ -20,12 +20,12 @@ public class WordUtilDemo {
     public static void main(String[] args) throws Exception {
         String filePath = "D:\\del\\nraq2\\内容安全审核-样例.docx";
         String targetPath = "D:\\del\\nraq2\\内容安全审核-样例 - " + System.currentTimeMillis() + ".docx";
-        Document doc = new Document("D:\\del\\nraq2\\aa (3).docx");
+        Document doc = new Document(filePath);
         String part0 = "(?<=^.{" + 40 + "}).{" + 8 + "}";
-        Pattern pattern0 = Pattern.compile(part0);
-        Paragraph firstParagraph0 = doc.getSections().get(0).getBody().getFirstParagraph();
-
-
+        // 获取文档中所有的批注节点
+        NodeCollection<Comment> comments = doc.getChildNodes(NodeType.COMMENT, true);
+        // 删除所有批注
+        comments.clear();
         doc.setTrackRevisions(true);
         doc.startTrackRevisions("韩云川");
 
