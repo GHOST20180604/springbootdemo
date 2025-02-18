@@ -4,8 +4,6 @@ import com.aspose.words.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
-
 /**
  * @author ：hanyc
  * @description：word工具类 使用 aspose.words 解析word 内容
@@ -13,10 +11,10 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Component
-public class WordUtilDemo2 {
+public class ReadWordByAsposeDemo {
 
     public static void main(String[] args) throws Exception {
-        String filePath = "D:\\del\\nraq2\\内容安全审核-样例.docx";
+        String filePath = "D:\\del\\nraq2\\【二改】第三册  太后临朝：通往巅峰之路  2025-2-13_44c4dc17c2f8a04ba352b313e984cc6c (2).docx";
         String targetPath = "D:\\del\\nraq2\\内容安全审核-样例 - " + System.currentTimeMillis() + ".docx";
         Document doc = new Document(filePath);
         SectionCollection sections = doc.getSections();
@@ -26,24 +24,25 @@ public class WordUtilDemo2 {
         comments.clear();
 //        doc.AcceptAllRevisions();
         RevisionCollection revisions = doc.getRevisions();
-        for (int i = 0; i < revisions.getCount(); i++) {
-            Revision revision = revisions.get(i);
-            String author = revision.getAuthor();
-            System.out.println(author);
-            int revisionType = revision.getRevisionType();
-            System.out.println(revisionType);
-            Node parentNode = revision.getParentNode();
-            String text = parentNode.getText();
-            System.out.println(text);
-//            Paragraph paragraph = parentNode.GetAncestor(NodeType.Paragraph) as Paragraph;
-            Paragraph paragraph = (Paragraph) parentNode.getAncestor(NodeType.PARAGRAPH);
-            System.out.println(author);
-            if (paragraph != null) {
-                String text2 = paragraph.toString(SaveFormat.TEXT);
-                System.out.println(text2);
-            }
-
-        }
+        // 解析修订内容.
+//        for (int i = 0; i < revisions.getCount(); i++) {
+//            Revision revision = revisions.get(i);
+//            String author = revision.getAuthor();
+//            System.out.println(author);
+//            int revisionType = revision.getRevisionType();
+//            System.out.println(revisionType);
+//            Node parentNode = revision.getParentNode();
+//            String text = parentNode.getText();
+//            System.out.println(text);
+////            Paragraph paragraph = parentNode.GetAncestor(NodeType.Paragraph) as Paragraph;
+//            Paragraph paragraph = (Paragraph) parentNode.getAncestor(NodeType.PARAGRAPH);
+//            System.out.println(author);
+//            if (paragraph != null) {
+//                String text2 = paragraph.toString(SaveFormat.TEXT);
+//                System.out.println(text2);
+//            }
+//
+//        }
         // 拒绝所有修订
 //        revisions.rejectAll();
         // 接受所有修订
@@ -58,7 +57,9 @@ public class WordUtilDemo2 {
             ParagraphCollection paragraphs = body.getParagraphs();
             for (int i = 0; i < paragraphs.getCount(); i++) {
                 Paragraph paragraph = paragraphs.get(i);
-                String text = paragraph.getText();
+                String text = paragraph.toString(SaveFormat.TEXT);
+                text = text.replaceAll("[\\r\\n]+$", "");
+//                String text = paragraph.getText();
                 System.out.println(text);
 //                sb.append(text).append("\n");
             }
@@ -75,7 +76,8 @@ public class WordUtilDemo2 {
                         ParagraphCollection paragraphsCell = nodes.getParagraphs();
                         for (int z = 0; z < paragraphsCell.getCount(); z++) {
                             Paragraph paragraph = paragraphsCell.get(z);
-                            String text = paragraph.getText();
+                            String text = paragraph.toString(SaveFormat.TEXT);
+//                            String text = paragraph.getText();
                             System.out.println(text);
                         }
                     }

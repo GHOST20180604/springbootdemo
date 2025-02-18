@@ -1,7 +1,6 @@
 package com.hanyc.demo.word;//package com.scientific.thesaurus.utill;
 
 import com.aspose.words.*;
-import com.spire.doc.DocumentObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -9,13 +8,13 @@ import java.util.regex.Pattern;
 
 /**
  * @author ：hanyc
- * @description：word工具类 使用 aspose.words 给word 审核模式修改内容.
+ * @description：word工具类 使用 aspose.words 给word 审阅模式修改内容.
  *
  * @date ：2023/2/13 15:25
  */
 @Slf4j
 @Component
-public class WordUtilDemo {
+public class ReviewWordByAsposeDemo {
 
     public static void main(String[] args) throws Exception {
         String filePath = "D:\\del\\nraq2\\内容安全审核-样例.docx";
