@@ -35,43 +35,43 @@ public class ReaderAsposePdfDemo3 {
             }
 
             // 3. 提取并合并段落
-//            List<TextParagraph> paragraphs = extractParagraphs(textLines);
+            List<TextParagraph> paragraphs = extractParagraphs(textLines);
 
             // 4. 打印所有段落内容
-//        for (int i = 0; i < paragraphs.size(); i++) {
-//            TextParagraph para = paragraphs.get(i);
-//            System.out.println("段落" + (i + 1) + "（行" + para.startLine + "-" + para.endLine + "）：");
-//            System.out.println(para.getText());
-//        }
+        for (int i = 0; i < paragraphs.size(); i++) {
+            TextParagraph para = paragraphs.get(i);
+            System.out.println("段落" + (i + 1) + "（行" + para.startLine + "-" + para.endLine + "）：");
+            System.out.println(para.getText());
+        }
 
             // 5. 示例：获取第二个段落的字符信息位置
-//        if (paragraphs.size() >= 7) {
-//            TextParagraph targetPara = paragraphs.get(6);
-//
-//            // 获取段落中每行的字符范围
-//            System.out.println("\n段落7的每行字符范围：");
-//            List<LineRange> lineRanges = targetPara.getLineRanges();
-//            for (LineRange range : lineRanges) {
-//                System.out.printf("行%d: 字符%d-%d%n",
-//                        range.lineIndex, range.startCharIndex, range.endCharIndex);
-//            }
-//
-//            // 获取指定字符范围的位置信息
-//            List<CharPosition> positions = targetPara.getCharPositions(5, 15); // 获取第5到15字符的位置
-//            System.out.println("\n示例字符位置信息：");
-//            for (CharPosition pos : positions) {
-//                System.out.printf("行%d: 字符%d-%d (坐标:%.2f,%.2f -> %.2f,%.2f)%n",
-//                        pos.lineIndex, pos.startCharIndex, pos.endCharIndex,
-//                        pos.rect.getLLX(), pos.rect.getLLY(),
-//                        pos.rect.getURX(), pos.rect.getURY());
-//                TextLine textLine = textLines.get(pos.lineIndex);
-//                Rectangle highlightRect = calculateHighlightRect(textLine, pos.startCharIndex, pos.endCharIndex);
-//                // 6. 添加高亮批注
-//                if (highlightRect != null) {
-//                    addHighlightAnnotation(targetPage, highlightRect);
-//                }
-//            }
-//        }
+        if (paragraphs.size() >= 7) {
+            TextParagraph targetPara = paragraphs.get(6);
+
+            // 获取段落中每行的字符范围
+            System.out.println("\n段落7的每行字符范围：");
+            List<LineRange> lineRanges = targetPara.getLineRanges();
+            for (LineRange range : lineRanges) {
+                System.out.printf("行%d: 字符%d-%d%n",
+                        range.lineIndex, range.startCharIndex, range.endCharIndex);
+            }
+
+            // 获取指定字符范围的位置信息
+            List<CharPosition> positions = targetPara.getCharPositions(5, 15); // 获取第5到15字符的位置
+            System.out.println("\n示例字符位置信息：");
+            for (CharPosition pos : positions) {
+                System.out.printf("行%d: 字符%d-%d (坐标:%.2f,%.2f -> %.2f,%.2f)%n",
+                        pos.lineIndex, pos.startCharIndex, pos.endCharIndex,
+                        pos.rect.getLLX(), pos.rect.getLLY(),
+                        pos.rect.getURX(), pos.rect.getURY());
+                TextLine textLine = textLines.get(pos.lineIndex);
+                Rectangle highlightRect = calculateHighlightRect(textLine, pos.startCharIndex, pos.endCharIndex);
+                // 6. 添加高亮批注
+                if (highlightRect != null) {
+                    addHighlightAnnotation(targetPage, highlightRect);
+                }
+            }
+        }
         }
         // 6. 保存修改后的文档
 //        pdfDocument.save(targetPath);

@@ -60,6 +60,7 @@ public class ReaderAsposePdfEnd {
                 Rectangle highlightRect = calculateHighlightRect(textLine, pos.startCharIndex, pos.endCharIndex);
                 // 6. 添加高亮批注
                 if (highlightRect != null) {
+//                    Rectangle highlightRect = new Rectangle(50, 500, 250, 520);
                     addHighlightAnnotation(targetPage, highlightRect);
                 }
             }
